@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{$system['name']}</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="__PUBLIC__/sui/sm.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/sui/sm-extend.min.css">
+    <link rel="stylesheet" href="__PUBLIC__/sui/main.css">
+    <script type='text/javascript' src='__PUBLIC__/sui/zepto.min.js' charset='utf-8'></script>
+    <script type="text/javascript">
+    $.config = {
+        route: false
+    }
+    </script>
+
+    <script type='text/javascript' src='__PUBLIC__/sui/sm.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='__PUBLIC__/sui/sm-extend.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='__PUBLIC__/sui/jquery-3.1.1.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='__PUBLIC__/sui/main.js' charset='utf-8'></script>
+    
+</head>
+
+<body>
+    <div class="page-group">
+        <div class="page page-current">
+            <header class="bar bar-nav header">
+                <if condition="$sui['return']">
+                    <a class="button button-link button-nav pull-left return">
+                        <span class="icon icon-left"></span>
+                    </a>
+                </if>
+                <h1 class="title">{$title}</h1>
+                <a class="button button-link button-nav pull-right" href="{:U('Home/My/index')}">
+                    <span class="icon icon-me"></span>
+                </a>
+            </header>
+            <div class="header-replace"></div>
+            <nav class="bar bar-tab">
+                <a class="tab-item detail-return return" href="{:U('Home/Index/index')}">
+                    <span class="icon icon-left"></span>
+                    <span class="tab-label">返回</span>
+                </a>
+                <a class="tab-item detail-buy" href="{:U('__CONTROLLER__/buy', ['id'=>$model['id']])}">
+                    <span class="icon {$sui['buy']['icon']}"></span>
+                    <span class="tab-label">{$sui['buy']['buy']}</span>
+                </a>
+            </nav>
+            <div class="content">

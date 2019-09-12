@@ -1,0 +1,68 @@
+body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { 
+    font-family: Microsoft YaHei,'宋体' , Tahoma, Helvetica, Arial, "\5b8b\4f53", sans-serif;
+}
+a:hover {
+    text-decoration:none;
+}
+.search-input-div {
+    margin-bottom: 10px;
+}
+.search-input {
+    height:30px !important;
+}
+.list-update-select {
+    height:1.7em;
+    padding:0;
+    margin:0;
+}
+.width-100 {
+    width: 100%;
+}
+.inline-block {
+    display: inline-block;
+}
+.operation-row {
+    margin-bottom: 0.7em;
+}
+.hidden-only {
+    display:none;
+}
+.border-1 {
+    border: 1px;
+}
+.mt-150 {
+    margin-top: 150px;
+}
+.mt-30 {
+    margin-top: 30px;
+}
+.mt-10- {
+    margin-top: -10px;
+}
+.mr-0 {
+    margin-right: 0px;
+}
+.mb-5 {
+    margin-bottom: 5px;
+}
+.pl-10 {
+    padding-left: 10px;
+}
+.pr-10 {
+    padding-right: 10px;
+}
+.p-54 {
+    padding: 5px 4px;
+}
+.color-gray {
+    color: gray;
+}
+.width-60p {
+    width:60%;
+}
+.width-35p {
+    width:35%;
+}
+.inline-block-i {
+    display:inline-block !important;
+}

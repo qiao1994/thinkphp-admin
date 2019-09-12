@@ -1,0 +1,637 @@
+<?php
+namespace Org\Util;
+
+class AdminController extends \Think\Controller {
+
+	/**
+	 * 初始化操作
+	 */
+	protected function _initialize() {
+        //测试内容
+        /*
+         */
+        //测试内容结束
+		$model = D(CONTROLLER_NAME);
+		//权限验证
+		$this->authorValidate();
+		
+		//系统信息
+		$system = D('System')->find();
+		$this->assign('system', $system);
+
+		//前端页面基本信息渲染
+		$this->assign('modelName', $model->modelName);
+		$this->assign('modelIcon', $model->modelIcon);
+		$this->assign('crumbsMap', $this->crumbsMap);
+	}
+
+	/**
+	 * 验证权限，判断当前用户是否允许访问当前action
+	 */
+	public function authorValidate() {
+		$user = session(MODULE_NAME.'-user');
+		if (!$user) {
+			$user['role_id'] = 0; //预留游客是0，如果需要允许所有人访问，增加游客权限即可
+		}
+        
+        //当前用户有权限的controller
+        $authorControllerInfo = false;
+        //所有权限
+        $authors = [];
+        $authors[] = D('Author')->where(['role_id'=>$user['role_id'], 'controller'=>'*'])->find();
+        $authors[] = D('Author')->where(['role_id'=>$user['role_id'], 'module'=>'*'])->find();
+        foreach($authors as $author) {
+            if ($author) {
+                $ret = eval($author['rule']);
+                if ($ret) {
+                    $authorControllerInfo = true;
+                }
+            }
+        }
+        //个别权限
+        $authors = D('Author')->where(['role_id'=>$user['role_id'], 'controller'=>['neq', '*']])->select();
+        foreach($authors as $author) {
+            if ($author) {
+                $ret = eval($author['rule']);
+                if ($ret) {
+                    //白名单 任意action都可以上白名单
+                    $authorControllerInfoWhite[] = $author['controller'];
+                } else {
+                    //黑名单 action是*才能上黑名单
+                    if ($author['action'] == '*') {
+                        $authorControllerInfoBlack[] = $author['controller'];
+                    }
+                } 
+            }
+        }
+        $this->assign('authorControllerInfo', $authorControllerInfo);
+        $this->assign('authorControllerInfoBlack', $authorControllerInfoBlack);
+        $this->assign('authorControllerInfoWhite', $authorControllerInfoWhite);
+
+
+        $authors = [];
+		//当前action
+		$authors[] = D('Author')->where(['role_id'=>$user['role_id'], 'module'=>MODULE_NAME, 'controller'=>CONTROLLER_NAME, 'action'=>ACTION_NAME])->find();
+        //当前controller
+		$authors[] = D('Author')->where(['role_id'=>$user['role_id'], 'module'=>MODULE_NAME, 'controller'=>CONTROLLER_NAME, 'action'=>'*'])->find();
+		//当前模块*
+		$authors[] = D('Author')->where(['role_id'=>$user['role_id'], 'module'=>MODULE_NAME, 'controller'=>'*'])->find();
+		//全局*
+		$authors[] = D('Author')->where(['role_id'=>$user['role_id'], 'module'=>'*'])->find();
+        //从小到大匹配
+        foreach($authors as $author) {
+            if ($author) {
+                $ret = eval($author['rule']);
+                if ($ret) {
+                    return true;
+                } else {
+                    $this->error('抱歉，您没有当前页面的访问权限!');
+                    return false;
+                }    
+            }
+        }
+        $this->error('抱歉，您没有当前页面的访问权限!');
+        return false;
+    }
+
+	//CREATE
+	/**
+	 * create之前要做的事情
+	 * 在子类中覆盖即可执行相关动作
+	 */
+	public function interfaceBeforeCreate() {
+	}
+
+	/**
+	 * create之后要做的事情
+	 * 在子类中覆盖即可执行相关动作
+	 */
+	public function interfaceAfterCreate($id) {
+	}
+
+	/**
+	 * 典型create操作
+	 */
+	public function create() {
+		if (IS_POST) {
+			$this->interfaceBeforeCreate();
+			$model = D(CONTROLLER_NAME);
+			//处理文件上传
+			if (count($_FILES) !== 0) {
+				$upload = new \Think\Upload();
+				$upload->maxSize = 0;
+				$upload->rootPath = './Public/file/'; 
+				$upload->savePath = '';
+				$upload->autoSub = false;
+				$info = $upload->upload();
+				if (!$info) {
+					$this->error($upload->getError());
+					return false;
+				}
+				foreach ($_FILES as $field => $file) {
+					$_POST[$field] = $info[$field]['savename'];
+				}
+			}
+            foreach ($_POST as $key=>$value) {
+                if (is_array($value)) {
+                    $_POST[$key] = implode(',', $value);
+                }
+            }
+			if (!$model->create()) {
+				$this->error($model->getError());
+				return false;
+			}
+			$newId = $model->add();
+            //特殊逻辑
+            foreach ($model->fieldMap as $field=>$modelParams) {
+                //hasmany类型特殊处理
+                if ($modelParams['type'] === 'hasmany') {
+                    // 把所有值的外键都更新成本$newId
+                    $hasmanyModel = D($this->getModelNameByTableName($modelParams['params']['foreign_table']));
+                    $hasmanyModel->where(['id'=>['IN', I('post.'.$field)]])->data([$modelParams['params']['foreign_key']=>$newId])->save();
+                } 
+            }
+			$this->interfaceAfterCreate($newId);
+			$this->success('新增成功!', U('list'), ['newId'=>$newId]);
+		}
+		$this->display('update');
+	}
+
+	//DELETE
+	
+	/**
+	 * delete之前要做的事情
+	 * 在子类中覆盖即可执行相关动作
+	 */
+	public function interfaceBeforeDelete($id) {
+	}
+	/**
+	 * delete之后要做的事情
+	 * 在子类中覆盖即可执行相关动作
+	 */
+	public function interfaceAfterDelete($id) {
+	}
+
+	/**
+	 * 典型delete操作
+	 */
+	public function delete() {
+		if (IS_POST) {
+			$this->interfaceBeforeDelete(I('post.id'));
+			$model = D(CONTROLLER_NAME);
+			//删除文件
+			foreach ($model->fieldMap as $field => $modelParams) {
+				if ($modelParams['type'] === 'file') {
+					$deleteModels = $model->select(I('post.id'));
+					foreach ($deleteModels as $deleteModel) {
+						unlink('./Public/file/'.$deleteModel[$field]);
+					}
+				}
+			}
+            $model->delete(I('post.id'));
+            //处理特殊逻辑
+            foreach ($model->fieldMap as $field => $modelParams) {
+                if ($modelParams['type'] == 'hasmany') {
+                    //hasmany需要把关联表的内容删除
+                    $hasmanyModel = D($this->getModelNameByTableName($modelParams['params']['foreign_table']));
+                    $hasmanyModel->where([$modelParams['params']['foreign_key']=>I('post.id')])->delete();
+                }
+            }
+			$this->interfaceAfterDelete(I('post.id'));
+			$data['info'] = '删除成功!';
+			$data['status'] = 1;
+			$this->ajaxReturn($data, 'JSON');
+		}
+	}
+
+	//UPDATE
+	
+	/**
+	 * update之前要做的事情
+	 * 在子类中覆盖即可执行相关动作
+	 */
+	public function interfaceBeforeUpdate($id) {
+	}
+	/**
+	 * update之后要做的事情
+	 * 在子类中覆盖即可执行相关动作
+	 */
+	public function interfaceAfterUpdate($id) {
+	}
+
+	/**
+	 * 典型update操作
+	 */
+	public function update($id = 0, $params = []) {
+
+		$model = D(CONTROLLER_NAME);
+		if (IS_POST) {
+			$this->interfaceBeforeUpdate($id);
+			$_POST['id'] = $id;
+			if (count($_FILES) !== 0) {
+				$upload = new \Think\Upload();
+				$upload->maxSize = 0; 
+				$upload->rootPath = './Public/file/';
+				$upload->savePath = '';
+				$upload->autoSub = false;
+				$info = $upload->upload();
+				if ($info) {
+					//上传成功，删除原有文件
+                    foreach ($_FILES as $field => $file) {
+                        if ($file['name']) {
+                            $_POST[$field] = $info[$field]['savename'];
+                            if ($info[$field]['savename']) {
+                                if (isset($id)) {
+                                    $modelTemp = $model->find($id);
+                                    unlink('./Public/file/'.$modelTemp[$field]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            foreach ($_POST as $key=>$value) {
+                if (is_array($value)) {
+                    $_POST[$key] = implode(',', $value);
+                }
+            }
+            //特殊逻辑
+            foreach ($model->fieldMap as $field=>$modelParams) {
+                if ($modelParams['type'] === 'hasmany') {
+                    $hasmanyModel = D($this->getModelNameByTableName($modelParams['params']['foreign_table']));
+                    //oldArr
+                    $oldDatas = $hasmanyModel->where([$modelParams['params']['foreign_key']=>$id])->select();
+                    foreach ($oldDatas as $oldData) {
+                        $oldArr[] = $oldData['id'];
+                    }
+                    $newArr = explode(',', I('post.'.$field));
+                    if (!$oldArr) {
+                        $oldArr = [];
+                    } 
+                    if (!$newArr) {
+                        $newArr = [];
+                    } 
+                    $need2Delete = array_diff($oldArr, $newArr);
+                    $need2Update = array_diff($newArr, $oldArr);
+                    if ($need2Delete) {
+                        $hasmanyModel->where(['id'=>['IN', $need2Delete]])->delete();
+                    }
+                    if ($need2Update) {
+                        $hasmanyModel->where(['id'=>['IN', $need2Update]])->data([$modelParams['params']['foreign_key']=>$id])->save();
+                    }
+                }
+            }
+            if (!$model->create($_POST)) {
+                $this->error($model->getError());
+				return false;
+			}
+			$model->save();
+
+			$this->interfaceAfterUpdate($id);
+			if (!$params['redirect']) {
+				$this->success('修改成功!', U('list'));
+			} else {
+				$this->success('修改成功!', $params['redirect']);
+			}
+		}
+		//展示页面
+		$modelData = $model->getById($id);
+		if (!$modelData) {
+			$this->error('非法操作!');
+			return false;
+		}
+
+        //特殊逻辑
+        foreach ($model->fieldMap as $field => $modelParams) {
+            if ($modelParams['type'] == 'hasmany') {
+                //hasmany需要把关联表的内容放到list里
+                $hasmanyModel = D($this->getModelNameByTableName($modelParams['params']['foreign_table']));
+                $list = $hasmanyModel->where([$modelParams['params']['foreign_key']=>$model->id])->select();
+                $this->assign('list', $list);
+            }
+        }
+		$this->assign('model', $modelData);
+		$this->display();
+	}
+
+	//UPDATE FROM LIST
+	/**
+	 * 通过list修改
+	 */
+	public function updateFromList() {
+		$model = I('post.dataModel');
+		$model = D($model);
+		$id = I('post.dataId');
+		$field = I('post.dataField');
+		$newValue = I('post.dataNewValue');
+		unset($data);
+		//判断当前记录是否存在
+		if (!$model->where(['id'=>$id])->find()) {
+			$data['info'] = '当前记录不存在!';
+			$data['status'] = 0;
+			$this->ajaxReturn($data, 'JSON');
+		}
+		unset($updateData);
+		$updateData['id'] = $id;
+		$updateData[$field] = $newValue;
+		if (!$model->create($updateData)) {
+			$data['info'] = $model->getError();
+			$data['status'] = 0;
+			$this->ajaxReturn($data, 'JSON');
+		} else {
+			$model->save();
+			$data['info'] = '操作成功！';
+			$data['status'] = 1;
+			$this->ajaxReturn($data, 'JSON');
+		}
+	}
+	//LIST
+	/**
+	 * 典型list操作
+	 */
+	public function list() {
+        $this->assign('searchMap', $_GET["searchMap"]);
+		$this->page();
+
+		$this->display();
+	}
+
+	/**
+	 * 分页数据渲染
+	 * @params array $searchMap 寻找元素时的条件,默认为$_GET['searchMap']的值
+	 */
+	public function page() {
+		$searchMap = $this->handleSearchMap($_GET["searchMap"]);
+
+		$model = D(CONTROLLER_NAME);
+		$sortStr = trim($_GET['sortStr']);
+        //过滤无效的排序项
+        $sortArr = explode(',', $sortStr);
+        foreach($sortArr as $key => $sortItem) {
+            $field = explode(' ', $sortItem)[0];
+            if (!in_array($field, $model->getDbFields())) {
+                unset($sortArr[$key]);
+            }
+        }
+        $sortStr = implode(',', $sortArr);
+
+		if (!$sortStr) {
+			if ($model->sortStr != '') {
+				$sortStr = $model->sortStr;
+			} else {
+				$sortStr = 'id';
+			}
+		}
+		$count = $model->where($searchMap)->count();
+		$page = new \Think\AdminPage($count, C('PAGE_NUM'));
+		$show = $page->show();
+		$list = $model->where($searchMap)->order($sortStr)->limit($page->firstRow.','.$page->listRows)->select();
+		$this->assign('list', $list);
+		$this->assign('page', $show);
+	}
+
+    //ContentList
+    /**
+     * 只显示内容的list页面
+     * @param idStr 1,2,3...
+     */
+    public function contentList($idStr = '') {
+        $model = D(CONTROLLER_NAME);
+        $idArr = explode(',', $idStr);
+        $list = $model->where(['id'=>['IN', $idArr]])->select();
+        $this->assign('list', $list);
+        $this->display('content_list');
+    }
+
+	//DETAIL
+	/**
+	 * 典型detail操作
+	 */
+	public function detail($id = 0) {
+		$model = D(CONTROLLER_NAME);
+		$detail = $model->find($id);
+		$this->assign('detail', $detail);
+		$this->display('detail');
+	}
+
+	//EXPORT
+	/**
+	 * 典型export操作
+	 * @params array $searchMap 寻找元素时的条件,默认为$_GET['searchMap']的值
+	 */
+	public function export() {
+		$searchMap = $this->handleSearchMap($_GET['searchMap']);
+		$sortStr = I('get.sortStr');
+		if (!$sortStr) {
+			$sortStr = 'id';
+		}
+		$model = D(CONTROLLER_NAME);
+		$excelCell = [];
+		$fieldStr = '';
+		foreach ($model->fieldMap as $field => $modelParams) {
+			if (($modelParams['excel'] !== false) && ($modelParams['excel'] !== 'import')) {
+				$excelCell[] = [$field, $modelParams['title']];
+				$fieldStr .= $field.',';
+			}
+		}
+
+		$fieldStr = substr($fieldStr, 0, strlen($fieldStr) - 1);
+		$excelData = $model->where($searchMap)->field($fieldStr)->order($sortStr)->select();
+		foreach ($excelData as $k => $v) {
+			foreach ($v as $k1 => $v1) {
+				$modelExcelConf = $model->fieldMap[$k1]['excel'];
+				if (($modelExcelConf !== false) && ($modelExcelConf !== 'import')) {
+					$excelData[$k][$k1] = $this->exportValueHandle($k1, $v1);
+				}
+			}
+		}
+
+		if ((count($excelData) == 0)||(count($excelCell) == 0)) {
+			$this->error('无数据可导出,请增加数据或修改筛选条件!');
+		}
+		\exportExcel($model->modelName, $excelCell, $excelData);
+	}
+
+	/**
+	 * 导出excel指定类型值处理
+	 * @params $field : 字段
+	 * @params $value : 需要处理的值
+	 * @return $returnValue : 处理完成的值
+	 */
+	public function exportValueHandle($field = '', $value = '') {
+		$model = D(CONTROLLER_NAME);
+		$param = $model->fieldMap[$field];
+		$type = $param['type'];
+        if ($param['export_specify'] != '') {
+            return eval($param['export_specify']);
+        }
+		$returnValue = $value;
+		switch ($type) {
+		case 'file':
+            $returnValue = 'http://'.$_SERVER['SERVER_NAME'].'/Public/file/'.$value;
+			break;
+		case 'foreign':
+			$returnValue = D($this->getModelNameByTableName($param['params']['foreign_table']))->where([$param['params']['foreign_table_key'] => $value])->find()[$param['params']['foreign_show']];
+			break;
+        case 'foreigns':
+			$checkboxforeignItems = D($this->getModelNameByTableName($param['params']['foreign_table']))->where([$param['params']['foreign_table_key'] => ['IN', $value]])->select();
+            $returnArr = [];
+            foreach ($checkboxforeignItems as $checkboxforeignItem) {
+                $returnArr[] = $checkboxforeignItem[$param['params']['foreign_show']];
+            }
+            $returnValue = implode(',', $returnArr);
+            break;
+		case 'date':
+            if ($value != 0) {
+			    $returnValue = date('Y-m-d', $value);
+            } else {
+			    $returnValue = '';
+            }
+			break;
+		case 'datetime':
+            if ($value != 0) {
+			    $returnValue = date('Y-m-d H:i:s', $value);
+            } else {
+			    $returnValue = '';
+            }
+			break;
+		}
+		return $returnValue;
+	}
+
+	//IMPORT
+	/**
+	 * 典型import操作
+	 * 无任何定制化需求的model可以直接复用本action
+	 * @params array $searchMap 寻找元素时的条件,默认为$_GET['searchMap']的值
+	 */
+	public function import() {
+		if (IS_POST) {
+			if (isset($_FILES["import"]) && ($_FILES["import"]["error"] == 0)) {
+				$model = D(CONTROLLER_NAME);
+				$excelCell = [];
+				foreach ($model->fieldMap as $field => $param) {
+					if (($param['excel'] !== false) && ($param['excel'] !== 'export')) {
+						$excelCell[] = $field;
+					}
+				}
+				$result = \importExecl($_FILES["import"]["tmp_name"]);
+				if ($result["error"] == 1) {
+					$excelData = $result["data"][0]["Content"];
+					foreach ($excelData as $k => $v) {
+						if ($k <= 2) {
+							//跳过表头
+							continue;
+						}
+						$data = [];
+						foreach ($excelCell as $i => $field) {
+							$data[$field] = $this->importValueHandle($field, $v[$i]);
+						}
+						if (!($model->create($data) && $model->add())) {
+							$this->error($model->getError());
+						}
+					}
+				}
+			}
+			$this->success('导入成功!', U(CONTROLLER_NAME.'/list'));
+		}
+		$this->display();
+	}
+
+	/**
+	 * 批量操作
+	 */
+	public function batchOperation() {
+		//执行model中对应的语句
+		$model = D(CONTROLLER_NAME);
+		eval($model->batchOperation[$_POST['operationKey']]['code']);
+		unset($data);
+		$data['info'] = '批量操作成功!';
+		$data['status'] = 1;
+		$this->ajaxReturn($data, 'JSON');
+	}
+
+	/**
+	 * 导入excel指定类型值处理
+	 * @params $field : 字段
+	 * @params $value : 需要处理的值
+	 * @return $returnValue : 处理完成的值
+	 */
+	public function importValueHandle($field = '', $value = '') {
+		$model = D(CONTROLLER_NAME);
+		$param = $model->fieldMap[$field];
+		$type = $param['type'];
+		$returnValue = $value;
+		switch ($type) {
+		case 'file':
+			break;
+		case 'foreign':
+			$returnValue = D($this->getModelNameByTableName($param['params']['foreign_table']))->where([$param['params']['foreign_show'] => $value])->find()[$param['params']['foreign_table_key']];
+			break;
+        case 'foreigns':
+            if ($value) {
+			    $checkboxforeignItems = D($this->getModelNameByTableName($param['params']['foreign_table']))->where([$param['params']['foreign_show'] => ['IN', $value]])->select();
+            }
+            $returnArr = [];
+            foreach ($checkboxforeignItems as $checkboxforeignItem) {
+                $returnArr[] = $checkboxforeignItem[$param['params']['foreign_table_key']];
+            }
+            $returnValue = implode(',', $returnArr);
+            break;
+		case 'date':
+			break;
+		case 'datetime':
+			break;
+		}
+		return $returnValue;
+	}
+
+	/**
+	 * 对searchMap中需要特殊处理的值进行处理
+	 * @params $searchMap : 待处理的searchMap
+	 * @return $searchMap : 处理完成的searchMap
+	 */
+	public function handleSearchMap($searchMap = '') {
+		$searchMap = array_filter($searchMap);
+		$model = D(CONTROLLER_NAME);
+		
+		foreach ($searchMap as $field => $value) {
+			if (strstr($field, 'Start')) {
+				//时间筛选,起止范围,需要特殊处理
+				$startField = $field;
+				$endField = str_replace("Start", "End", $field);
+				$field = str_replace('Start', '', $field); //此后的field为真实field
+				$startTime = $searchMap[$startField];
+				$endTime = $searchMap[$endField];
+				unset($searchMap[$startField]);
+				unset($searchMap[$endField]);
+				$searchMap[$field] = ['between', [strtotime($startTime), strtotime($endTime)]];
+			}
+			$param = $model->fieldMap[$field];
+			if (($param['type'] == 'foreign') && ($param['params']['search_type'] == 'input')) {
+				//input类型的外键，需要转换成id
+				if ($searchMap[$field]) {
+					$retArr = D($this->getModelNameByTableName($param['params']['foreign_table']))->where([$param['params']['foreign_show'] => $searchMap[$field]])->select();
+					$retStr = '';
+					foreach ($retArr as $key => $value) {
+						$retStr .= $value[$param['params']['foreign_table_key']].',';
+					}
+					$retStr = rtrim($retStr, ",");
+					$searchMap[$field] = ['IN', $retStr];
+				}
+			}
+            if (($param['type'] == 'foreigns') || ($param['type'] == 'checkbox')) {
+                $searchMap[$field] = ['LIKE', '%'.$value.'%'];
+            }
+		}
+		return $searchMap;
+	}
+
+			$foreignView = '
+                <div class="col-md-3 search-input-div">
+                    <input type="text" class="col-md-12 search-input" name="searchMap['.$field.']" id="'.$field.'" value="{$searchMap['.$field.']}" placeholder="'.$param['title'].'"/>
+                </div>';
+			return $foreignView;
+		}
+	}
+}

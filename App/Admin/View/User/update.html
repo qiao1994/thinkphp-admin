@@ -1,0 +1,94 @@
+<include file="Public/ace_header" />
+    <div class="row">
+        <form class="form-horizontal update-form pr-10 pl-10" role="form" method="post" >
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="username"> 用户名 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        
+            <input type="text" class="width-100" placeholder="用户名" id="username" name="username"  value="{$model['username']|default=''}" validate-required="required:请填写用户名" <if condition="ACTION_NAME eq update">readonly</if>/>
+            
+                        <i></i>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+             </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="name"> 姓名 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        <input type="text" class="width-100" placeholder="姓名" id="name" name="name"  value="{$model['name']|default=''}" validate-required="required:请填写姓名" />
+                        <i></i>
+                        <small class="color-gray"></small>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="password"> 密码 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        
+            <input type="password" class="width-100" placeholder="无需修改密码则不填写" id="password" name="password"  value=""  />
+            
+                        <i></i>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+             </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="repassword"> 重复密码 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        
+            <input type="password" class="width-100" placeholder="无需修改密码则不填写" id="repassword" name="repassword"  value=""  />
+            
+                        <i></i>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+             </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="role_id"> 用户类型 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        <select name="role_id" id="role_id" class="width-100" >
+                            <php> $role = D("Role")->where(1)->select(); </php>
+                            <volist name="role" id="vo">
+                            <option value="{$vo['id']}" <if condition ="$model['role_id'] eq $vo['id']"> selected </if>>{$vo['name']}</option>
+                            </volist>
+                        </select>
+                        <i></i>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+             </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="state"> 状态 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        <select name="state" id="state" class="width-100" >
+                             <option value="正常" <if condition ="$model['state'] eq '正常'"> selected </if> >正常</option>
+                             <option value="禁用" <if condition ="$model['state'] eq '禁用'"> selected </if> >禁用</option>
+                        </select>
+                        <i></i>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+           </div>
+            <div class="clearfix form-actions">
+                <div style="margin-left: 25%;">
+                    <button class="btn btn-info btn-sm" type="submit">
+                        <i class="icon-ok bigger-110"></i>
+                        提交
+                    </button>
+                    &nbsp; &nbsp; &nbsp;
+                    <button class="btn btn-sm return" type="button">
+                        <i class="icon-reply bigger-110"></i>
+                        返回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+<include file="Public/ace_footer" />

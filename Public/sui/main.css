@@ -1,0 +1,174 @@
+/*字体设置*/
+html, body { 
+    font-family: "Microsoft YaHei" !important; 
+}
+/*设置为直角*/
+button, input, a { 
+    border-radius:0em !important;
+}
+
+/*表单label宽度*/
+.list-block .item-title.label {
+    width:25%;
+}
+/*主色*/
+.active{
+    /*color:#0894ec !important;*/
+    border-color:#0894ec !important;
+}
+
+.header {
+    background-color:#77CE57;
+    color:white;
+}
+.header a ,.header h1{
+    color:white !important;
+}
+
+.header-replace {
+    height:2.2rem;
+}
+
+.item-title {
+    overflow:visible !important;
+}
+.content-block-title {
+    margin-top: 10px;
+}
+.list-block {
+    margin-bottom: 0.5rem;
+}
+.text-ellipsis {
+    overflow:hidden !important; 
+    text-overflow:ellipsis; 
+    white-space:nowrap;
+}
+
+/*index*/
+.list-img {
+    width:100%;
+    height:5rem;
+}
+.list-name-div {
+    border-bottom: 0.5px solid #f0f0f0;
+    margin-bottom:2px;
+    text-align:center;
+}
+.list-name {
+    font-size:1.5rem;
+    color:orange;
+    display:block;
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis;
+}
+.list-info {
+    line-height:1.2rem;
+    border-bottom:solid #f0f0f0 1px;
+    margin-bottom:5px;
+    padding-bottom:2px;
+}
+.list-info-item {
+    white-space:nowrap; 
+    overflow:hidden; 
+    text-overflow:ellipsis;
+    color:#64a0d3;
+}
+.list-desc {
+    text-indent: 2em;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    overflow: hidden;
+    border-top: 0.5px solid #f0f0f0;
+}
+/*列表页面*/
+.sort-table {
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 0.5rem;
+}
+.sort-table a{
+    color: black;
+}
+.sort-table td {
+    width: 20%;
+}
+.sort-active{
+    color: white !important;    
+    padding: 5px;
+    -moz-border-radius: 5px !important;
+    -webkit-border-radius: 5px !important;
+    border-radius: 5px !important;
+    background-color: rgb(119,206,87);
+    color: #fff;
+    text-align: center;
+}
+/*詳情頁面*/
+.detail-img {
+    width:100%;
+    height:15rem;
+}
+.color-block {
+    background: rgb(119,206,87);
+}
+.detail-submit {
+    padding-left: 0.75rem; 
+    padding-right: 0.75rem; 
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+.detail-buy {
+    background-color:#0894ec;
+    color: white !important;
+}
+/*购买页面*/
+.button-left {
+    border-radius:0.2rem !important;
+    border:0px;
+    background-color:#0894ec !important;
+    color:white;
+}
+.button-right {
+    border-radius:0.2rem !important;
+    border:0px;
+    background-color:#ffa500 !important;
+    color:white;
+}
+/*我的*/
+.base-info {
+    color: black;
+    padding-right: 15px;
+}
+.user-img {
+    width: 100%;
+    height: 6rem;
+    background:url('/Public/assets/images/background3.jpg') no-repeat;background-size:100% 100%
+}
+.user-photo-photo {
+
+}
+.user-phote-div {
+    padding: 1rem 1rem;
+
+}
+.user-photo-info {
+    padding-left: 2rem;
+}
+/*common*/
+.button-cute1 {
+    background-color: rgb(248,255,246);
+    -moz-border-radius: 10px !important;
+    -webkit-border-radius: 10px !important;
+    border-radius: 10px !important;
+    border-color: rgb(176,228,157);
+    color: rgb(176,228,157);
+}
+.button-cute2 {
+    background-color: rgb(254,249,240);
+    -moz-border-radius: 10px !important;
+    -webkit-border-radius: 10px !important;
+    border-radius: 10px !important; 
+    border-color: rgb(239,170,67);
+    color: rgb(239,170,67);
+}

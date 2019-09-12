@@ -1,0 +1,137 @@
+
+<include file="Public/ace_header" />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="row hidden-480 search">
+            <form id="search-form">
+                <div class="col-md-3 search-input-div">
+                    <input type="text" class="col-md-12 search-input" name="searchMap[id]" id="id" value="{$searchMap[id]}" placeholder="ID"/>
+                </div>
+                <div class="col-md-3 col-md-offset-6 center search-input-div">
+                    <button type="submit" class="btn btn-success btn-xs">查询</button>
+                    <button class="btn btn-warning btn-xs" type="button" href="#" onclick="clearFind()">清空</button>
+                    <button class="btn btn-danger btn-xs" type="button" href="javascript:void(0);" id="delall">删除</button>
+                </div>
+                <input id="sort-str" class="sort-str" type="hidden" name="sortStr" value="{$_GET['sortStr']}"/>
+            </form>
+        </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="center">
+                                <label>
+                                    <input type="checkbox" class="ace" id="checkall"/>
+                                    <span class="lbl"></span>
+                                </label>
+                            </th>
+                        <th class="center">
+                            ID
+                        </th>
+                        <th class="center">
+                            标签
+                        </th>
+                        <th class="center">
+                            标题
+                        </th>
+                        <th class="center">
+                            图片
+                        </th>
+                        <th class="center">
+                            摘要
+                        </th>
+                        <th class="center">
+                            内容
+                        </th>
+                        <th class="center">
+                            浏览量
+                        </th>
+                        <th class="center">
+                            真实浏览量
+                        </th>
+                            <th class="center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <volist name="list" id="vo">
+                        <tr>
+                            <td class="center">
+                                <label>
+                                    <input type="checkbox" class="ace" name="chkid" value="{$vo['id']}"/>
+                                    <span class="lbl"></span>
+                                </label>
+                            </td>
+						<td class="center">{$vo[id]}</td>
+                        <php>
+                            $checkboxForeignResultArr = D("Tag")->where(["id"=>["IN", $vo[tag_id]]])->select();
+                            $checkboxForeignTempArr = [];
+                            foreach ($checkboxForeignResultArr as $checkboxForeignResultItem) {
+                                $checkboxForeignTempArr[] = $checkboxForeignResultItem["name"];
+                            }
+                            $checkboxForeignStr = implode(",", $checkboxForeignTempArr);
+                        </php>
+                        <td class="center">{$checkboxForeignStr}</td>
+						<td class="center">{$vo[title]}</td>
+                        <td class="center"><img src="__PUBLIC__/file/{$vo['image']}" width="120" height="60" /></td>
+						<td class="center">{$vo[summary]}</td>
+                        <td class="center">{$vo[content]|html_entity_decode}</td>
+						<td class="center">{$vo[browse]}</td>
+						<td class="center">{$vo[real_browse]}</td>
+                            <td class="center">
+                                <div class="visible-md visible-lg hidden-sm hidden-xs btn-group">
+                                    <a href="{:U(detail, ['id'=>$vo['id']])}">
+                                        <button type="button" class="btn btn-xs btn-warning border-1">
+                                            <i class="icon-search mr-0"></i>
+                                        </button>
+                                    </a>
+                                    <a href="{:U(update, ['id'=>$vo['id']])}">
+                                        <button type="button" class="btn btn-xs btn-info border-1">
+                                            <i class="icon-edit mr-0"></i>
+                                        </button>
+                                    </a>
+                                    <a class="delete-btn" id="{$vo['id']}" >
+                                        <button type="button" class="btn btn-xs btn-danger border-1">
+                                            <i class="icon-trash"></i>
+                                        </button>
+                                    </a>
+                                </div>
+                                <div class="visible-xs visible-sm hidden-md hidden-lg">
+                                    <div class="inline position-relative">
+                                        <button class="btn btn-minier btn-primary dropdown-toggle" data-toggle="dropdown">
+                                            <i class="icon-cog icon-only bigger-110"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-only-icon dropdown-yellow pull-right dropdown-caret dropdown-close">
+                                            <li>
+                                                <a href="{:U(detail, ['id'=>$vo['id']])}" class="tooltip-success" data-rel="tooltip" title="Edit">
+                                                    <span class="yellow">
+                                                        <i class="icon-search bigger-120"></i>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="{:U(update, ['id'=>$vo['id']])}" class="tooltip-success" data-rel="tooltip" title="Edit">
+                                                    <span class="green">
+                                                        <i class="icon-edit bigger-120"></i>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="delete-btn" id="{$vo['id']}">
+                                                    <span class="red">
+                                                        <i class="icon-trash bigger-120"></i>
+                                                    </span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </volist>
+                </tbody>
+            </table>
+            {$page}
+        </div><!-- /.table-responsive -->
+    </div><!-- /span -->
+    </div><!-- /row -->
+<include file="Public/ace_footer" />

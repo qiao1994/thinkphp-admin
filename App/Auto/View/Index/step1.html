@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>第一步：选择数据表</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <h1>第一步：选择数据表</h1>
+<div class="row">
+  <div class="col-md-6">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">选择数据表(生成文件)</h3>
+    </div>
+    <div class="panel-body">
+        <div class="list-group">
+            <volist name="tables" id="vo" key="k">
+              <a href="__CONTROLLER__/step2/table/{$vo}" class="list-group-item">{$vo}</a>
+            </volist>
+        </div>
+    </div>
+  </div>
+  </div>
+  <div class="col-md-6">
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h3 class="panel-title">选择数据表(只CRUD代码)</h3>
+    </div>
+    <div class="panel-body">
+        <div class="list-group">
+            <volist name="tables" id="vo" key="k">
+              <a href="__CONTROLLER__/step2Code/table/{$vo}" class="list-group-item">{$vo}</a>
+            </volist>
+        </div>
+    </div>
+  </div>
+  </div>
+
+</div>
+  <div class="panel panel-info" style="margin-top:500px;">
+    <div class="panel-heading">
+      <h3 class="panel-title">选择数据表(删除)-谨慎操作！！！</h3>
+    </div>
+    <div class="panel-body">
+        <div class="list-group">
+            <volist name="tables" id="vo" key="k">
+              <a href="__CONTROLLER__/step2D/table/{$vo}" class="list-group-item" onclick="return confirm('是否确认要删除本model相关的所有文件(不可恢复)?');">{$vo}</a>
+            </volist>
+        </div>
+    </div>
+  </div>
+
+  </body>
+</html>

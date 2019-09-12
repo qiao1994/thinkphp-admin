@@ -1,0 +1,80 @@
+<include file="Public/ace_header" />
+    <div class="row">
+        <form class="form-horizontal update-form pr-10 pl-10" role="form" method="post" >
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="role_id"> 角色 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        
+                        <select name="role_id" id="role_id" class="width-100" >
+                            <php> $role = D("Role")->select(); </php>
+                            <option value="0">游客</option>
+                            <volist name="role" id="vo">
+                            <option value="{$vo['id']}" <if condition ="$model['role_id'] eq $vo['id']"> selected </if>>{$vo['name']}</option>
+                            </volist>
+                        </select>
+                        <i></i>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+             </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="module"> 模块 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        <input type="text" class="width-100" placeholder="模块" id="module" name="module"  value="{$model['module']|default=''}" validate-required="required:请填写模块" />
+                        <i></i>
+                        <small class="color-gray"></small>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="controller"> 控制器 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        <input type="text" class="width-100" placeholder="控制器" id="controller" name="controller"  value="{$model['controller']|default=''}" validate-required="required:请填写控制器" />
+                        <i></i>
+                        <small class="color-gray"></small>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="action"> 方法 </label>
+                <div class="col-xs-12 col-sm-6">
+                    <span class="block input-icon input-icon-right">
+                        <input type="text" class="width-100" placeholder="方法" id="action" name="action"  value="{$model['action']|default=''}" validate-required="required:请填写方法" />
+                        <i></i>
+                        <small class="color-gray"></small>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+            </div>
+            <div class="form-group">
+                <label class="col-xs-12 col-sm-3 col-md-3 control-label no-padding-right" for="rule"> 规则 </label>
+                <div class="col-xs-12 col-sm-6">
+                <span class="block input-icon input-icon-right">
+                <textarea class="col-xs-12 col-sm-6 width-100 p-54" rows="5" id="rule" name="rule" placeholder="规则" validate-required="required:请填写规则" >{$model["rule"]|default=''}</textarea>
+                        <i></i>
+                        <small class="color-gray"></small>
+                    </span>
+                </div>
+                <div class="help-block col-xs-12 col-sm-reset inline mb-5"></div>
+            </div>
+            <div class="clearfix form-actions">
+                <div style="margin-left: 25%;">
+                    <button class="btn btn-info btn-sm" type="submit">
+                        <i class="icon-ok bigger-110"></i>
+                        提交
+                    </button>
+                    &nbsp; &nbsp; &nbsp;
+                    <button class="btn btn-sm return" type="button">
+                        <i class="icon-reply bigger-110"></i>
+                        返回
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+<include file="Public/ace_footer" />

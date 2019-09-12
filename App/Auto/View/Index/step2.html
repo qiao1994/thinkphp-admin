@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第二步：填写字段信息</title>
+  <!-- 新 Bootstrap 核心 CSS 文件 -->
+  <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+  <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+  <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+  <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+  <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script>
+      $(document).ready(function(){
+          $(".check-all").click(function(){
+              var checkClass = $(this).attr('data-item');
+              if ($(this).is(':checked')) {
+                  $('.'+checkClass).prop("checked","true");
+                  } else {
+                  $('.'+checkClass).removeAttr("checked");
+              }
+          });
+          $('.type-content input').each(function(){
+              $(this).attr('data-name', $(this).attr('name'));
+              $(this).removeAttr('name');
+          });
+          $('.type-select').change(function(){
+              var type = $(this).val();
+              if (type == 'file') {
+                  field = $(this).attr('data-field');
+                  reqId = '#'+field+'-required';
+                  $('#'+field+'-required').removeAttr('checked');
+              }
+              console.log($(this).parent().next().find('.type-content'));
+
+              $(this).parent().next().find('.type-content').addClass('hidden');
+              $(this).parent().next().find('.'+type+'-content').removeClass('hidden');
+              //name处理，避免覆盖问题
+              $(this).parent().next().find('.type-content input').each(function(){
+                  $(this).attr('data-name', $(this).attr('name'));
+                  $(this).removeAttr('name');
+              });
+              $(this).parent().next().find('.'+type+'-content input').each(function(){
+                  $(this).attr('name', $(this).attr('data-name'));
+                  $(this).removeAttr('data-name');
+              });
+          });
+      });
+  </script>
+</head>
+<body>
+    <form method="post" action="__CONTROLLER__/step3" class="form-inline">
+        <h1>第二步：填写字段信息</h1>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">填写字段信息 | model名:{$modelName}</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped table-bordered table-hover">
+                    <tr>
+                        <th width="5%" style="text-align: center;">编号</th>
+                        <th width="10%" style="text-align: center;">字段</th>
+                        <th width="5%"  style="text-align: center;">输入(C)
+                            <input type="checkbox" data-item="input_a_item" class="check-all"/></th>
+                        <th width="5%"  style="text-align: center;">列表(L)
+                            <input type="checkbox" data-item="list_a_item" class="check-all"/></th>
+                        <th width="5%"  style="text-align: center;">详情(D)
+                            <input type="checkbox" data-item="detail_a_item" class="check-all"/></th>
+                        <th width="5%"  style="text-align: center;">必填(C)
+                            <input type="checkbox" data-item="required_a_item" class="check-all"/></th>
+                        <th width="5%"  style="text-align: center;">搜索(S)
+                            <input type="checkbox" data-item="search_a_item" class="check-all"/></th>
+                        <th width="5%"  style="text-align: center;">EXCEL(E)
+                            <input type="checkbox" data-item="excel_a_item" class="check-all"/></th>
+                        <th width="5%"  style="text-align: center;">排序(S)
+                            <input type="checkbox" data-item="sort_a_item" class="check-all"/></th>
+                        <th width="5%"  style="text-align: center;">列表更新(LU)
+                            <input type="checkbox" data-item="list_update_a_item" class="check-all"/></th>
+                        <th style="text-align: center;">名称</th>
+                        <th width="10%" style="text-align: center;">类型</th>
+                        <th width="25%" style="text-align: center;">内容</th>
+                    </tr>
+                    <volist name="modelFields" id="vo" key="k">
+                    <tr>
+                        <td style="text-align: center;">{$k}</td>
+                        <td style="text-align: center;">{$vo['field']}</td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="input_a_item" name="{$vo['field']}[input_a]" value="1" <if condition="$vo['fieldInput']">checked</if>
+                            >
+                        </td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="list_a_item" name="{$vo['field']}[list_a]" <if condition="$vo['fieldList']">checked</if> value="1"></td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="detail_a_item" name="{$vo['field']}[detail_a]" <if condition="$vo['fieldDetail']">checked</if> value="1"></td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="required_a_item" id="{$vo['field']}-required" name="{$vo['field']}[required_a]" checked value="1"></td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="search_a_item" name="{$vo['field']}[search_a]" value="1" <if condition="$vo['fieldSearch']">checked</if>
+                            >
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="excel_a_item" name="{$vo['field']}[excel_a]" value="1">
+                            </td>
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="sort_a_item" name="{$vo['field']}[sort_a]" value="1">
+                            </td>
+                            <td style="text-align: center;">
+                                <input type="checkbox" class="list_update_a_item" name="{$vo['field']}[list_update_a]" value="1">
+                            </td>
+
+                            <td style="text-align: center;">
+                                <input type="text" class="form-control" name="{$vo['field']}[name_a]" value="{$vo['fieldName']}" placeholder="字段名称"></td>
+                            <td style="text-align: center;">
+                                <select class="form-control type-select" data-field="{$vo['field']}" name="{$vo['field']}[type_a]">
+                                    <option value="text">文本行</option>
+                                    <option value="password">密码行</option>
+                                    <option value="select">下拉选择框</option>
+                                    <option value="checkbox">多选</option>
+                                    <option value="">-----------</option>
+                                    <option value="foreign">关联外键</option>
+                                    <option value="foreigns">多选外键</option>
+                                    <option value="hasmany">一对多</option>
+                                    <option value="">-----------</option>
+                                    <option value="file">文件</option>
+                                    <option value="textarea">文本框</option>
+                                    <option value="richtextbox">富文本框</option>
+                                    <option value="date">日期</option>
+                                    <option value="datetime" <if condition="($vo['field'] eq 'create_time') OR ($vo['field'] eq 'update_time')"> selected </if>>日期时间</option>
+                                </select>
+                            </td>
+                            <td style="text-align: center;">
+                                <div class="foreign-content hidden type-content">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_table_a]" placeholder="foreign_table">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_table_key_a]" placeholder="foreign_table_key">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_show_a]" placeholder="foreign_show">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][search_type_a]" placeholder="search_type{select/input}">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_href_a]" placeholder="foreign_href{true/false}">
+                                </div>
+                                <div class="foreigns-content hidden type-content">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_table_a]" placeholder="foreign_table">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_table_key_a]" placeholder="foreign_table_key">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_show_a]" placeholder="foreign_show">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][search_type_a]" placeholder="search_type{select/input}">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_href_a]" placeholder="foreign_href{true/false}">
+                                </div>
+                                <div class="hasmany-content hidden type-content">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_table_a]" placeholder="foreign_table">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_key_a]" placeholder="foreign_table_key">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_show_a]" placeholder="foreign_show">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][foreign_href_a]" placeholder="foreign_href{true/false}">
+                                </div>
+                                <div class="file-content hidden type-content">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][img_a]" placeholder="img{true/flase}">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][width_a]" placeholder="width">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][height_a]" placeholder="height">
+                                </div>
+                                <div class="select-content checkbox-content  hidden type-content">
+                                    <input type="text" class="form-control" name="{$vo['field']}[params][options_a]" placeholder="options">
+                                </div>
+                            </td>
+
+                        </tr>
+                        </volist>
+                    </table>
+                    <hr/>
+                    <div class="row">
+                        <div class="col-md-1">
+                            <h4>必填项</h4>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="2" name="file_a" checked="" class="btn btn-info"/>
+                                    <h4 style="display:inline-block;">生成文件</h4>
+                                </label>
+                                <label>
+                                    <input type="checkbox" value="2" name="notAuthority_a" checked="" class="btn btn-info"/>
+                                    <h4 style="display:inline-block;">验证权限</h4>
+                                </label>
+                                <label>
+                                    <input type="checkbox" value="2" name="excel_a" class="btn btn-info"/>
+                                    <h4 style="display:inline-block;">导入/导出</h4>
+                                </label>
+                                <label>
+                                    <input type="checkbox" value="2" name="delete_a" checked="" class="btn btn-info"/>
+                                    <h4 style="display:inline-block;">删除按钮</h4>
+                                </label>
+                                <label>
+                                    <input type="checkbox" value="2" name="update_a" checked="" class="btn btn-info"/>
+                                    <h4 style="display:inline-block;">修改按钮</h4>
+                                </label>
+                                <label>
+                                    <input type="checkbox" value="2" name="detail_a" checked="" class="btn btn-info"/>
+                                    <h4 style="display:inline-block;">详情按钮</h4>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+        <div class="form-group">
+          <input type="text" class="form-control" name="name_a" placeholder="名称(例:user->用户)"></div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <input type="text" class="form-control" name="icon_a" placeholder="图标(icon)"></div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <input type="text" class="form-control" name="sortStr_a" placeholder="排序(例:id desc)"></div>
+      </div>
+      <div class="col-md-2">
+        <input type="submit" value="下一步" class="btn btn-info" style="margin-right: 1%;" />
+        <a class="btn btn-default" href="__CONTROLLER__/step1" style="margin-right: 1%;">返回</a>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+</body>
+</html>

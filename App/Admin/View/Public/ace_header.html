@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>{$system['name']}-后台管理</title>
+    <link href="__PUBLIC__/ace/assets/images/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+    <meta name="keywords" content="{$system['keyword']}" />
+    <meta name="description" content="{$system['description']}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 基本样式 -->
+    <!-- basic styles -->
+    <link href="__PUBLIC__/ace/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="__PUBLIC__/ace/assets/css/font-awesome.min.css" />
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="__PUBLIC__/ace/assets/css/font-awesome-ie7.min.css" />
+    <![endif]-->
+    <!-- page specific plugin styles -->
+    <!-- fonts -->
+    <!--<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,300" />-->
+    <!--<link rel="stylesheet" href="__PUBLIC__/ace/assets/font/font.css" />-->
+    <!-- ace styles -->
+    <link rel="stylesheet" href="__PUBLIC__/ace/assets/css/ace.min.css" />
+    <link rel="stylesheet" href="__PUBLIC__/ace/assets/css/ace-rtl.min.css" />
+    <link rel="stylesheet" href="__PUBLIC__/ace/assets/css/ace-skins.min.css" />
+    <link rel="stylesheet" href="__PUBLIC__/font-awesome-4.7.0/css/font-awesome.min.css">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="__PUBLIC__/ace/assets/css/ace-ie.min.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- ace settings handler -->
+    <script src="__PUBLIC__/ace/assets/js/ace-extra.min.js"></script>
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="__PUBLIC__/ace/assets/js/html5shiv.js"></script>
+    <script src="__PUBLIC__/ace/assets/js/respond.min.js"></script>
+    <![endif]-->
+    <!--[if !IE]>
+    -->
+    <script src="__PUBLIC__/ace/assets/js/jquery-2.0.3.min.js"></script>
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script src="__PUBLIC__/ace/assets/js/jquery-1.10.2.min.js"></script>
+    <![endif]-->
+    <!--[if !IE]>
+    -->
+    <script type="text/javascript">
+            window.jQuery || document.write("<script src='__PUBLIC__/ace/assets/js/jquery-2.0.3.min.js'>"+"<"+"script>");</script>
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+         window.jQuery || document.write("<script src='__PUBLIC__/ace/assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");</script>
+    <![endif]-->
+    <!-- 基本样式结束 -->
+    <!-- 扩展使用 -->
+    <script src="__PUBLIC__/ace/assets/js/bootstrap.min.js"></script>
+    <link href="__PUBLIC__/ace/admin/css/admin.css" rel="stylesheet" />
+    <script type="text/javascript" src="__PUBLIC__/UEditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/UEditor/ueditor.all.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/My97DatePicker/WdatePicker.js"></script>
+    <!-- 扩展使用结束 -->
+</head>
+<body>
+    <input type="hidden" id="controller" value="__CONTROLLER__" />
+    <div class="navbar navbar-default" id="navbar">
+        <script type="text/javascript">try{ace.settings.check('navbar' , 'fixed')}catch(e){}</script>
+        <div class="navbar-container" id="navbar-container">
+            <div class="navbar-header pull-left">
+                <a href="__MODULE__" class="navbar-brand">
+                    <small> <i class="icon-leaf"></i>
+                        {$system['name']}-后台管理
+                    </small>
+                </a>
+                <!-- /.brand --> </div>
+            <!-- /.navbar-header -->
+            <div class="navbar-header pull-right" role="navigation">
+                <ul class="nav ace-nav">
+                    <li class="light-blue">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                            <img class="nav-user-photo" src="__PUBLIC__/ace/assets/avatars/admin.png" alt="Jason's Photo" />
+                            <span class="user-info">
+                                <small>欢迎光临,</small>
+                                <?=session(MODULE_NAME.'-user')['username'];?></span> <i class="icon-caret-down"></i>
+                        </a>
+                        <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                            <li>
+                            <a href="{:U('User/update', ['id'=>session(MODULE_NAME.'-user')['id']])}">
+                                    <i class="icon-user"></i>
+                                    个人信息
+                                </a>
+                            </li>
+                            <li>
+                                <a href="__MODULE__/System/update/id/1">
+                                    <i class="icon-cog"></i>
+                                    系统设置
+                                </a>
+                            </li>
+
+                            <li class="divider"></li>
+                            <li>
+                                <a href="__MODULE__/Index/logout" onclick="return confirm('是否确定要注销?');">
+                                    <i class="icon-off"></i>
+                                    退出
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- /.ace-nav --> </div>
+            <!-- /.navbar-header --> </div>
+        <!-- /.container --> </div>
+
+    <div class="main-container" id="main-container">
+        <script type="text/javascript">
+                try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+            </script>
+
+        <div class="main-container-inner">
+            <a class="menu-toggler" id="menu-toggler" href="#">
+                <span class="menu-text"></span>
+            </a>
+
+            <div class="sidebar" id="sidebar">
+                <script type="text/javascript">try{ace.settings.check('sidebar' , 'fixed')}catch(e){}</script>
+
+
+
+                <ul class="nav nav-list">
+                    <php>
+                        $menus = json_decode($system['menu'], true);
+                        foreach ($menus as $controllerName => $menu) {
+                            //模型
+                            if ($menu['model']) {
+                                $menuModel = D($menu['model']);
+                            } else {
+                                $menuModel = D($controllerName);
+                            }
+                            //title
+                            if ($menu['title']) {
+                                $menuTitle = $menu['title'];
+                            } else {
+                                if ($menu['model']) {
+                                    $menuTitle = $menuModel->modelName;
+                                } else {
+                                    $menuTitle = $menuModel->modelName;
+                                }
+                            }
+                            //icon
+                            if ($menu['icon']) {
+                                $menuIcon = $menu['icon'];
+                            } else {
+                                $menuIcon = $menuModel->modelIcon;
+                            }
+                            //action
+                            if (!$menu['action']) {
+                                $menu['action'] = [
+                                    'list'=>[
+                                        'title'=>$menuTitle.'列表',
+                                        'href'=>U($controllerName.'/list'),
+                                    ],  
+                                    'create'=>[
+                                        'title'=>$menuTitle.'新增',
+                                        'href'=>U($controllerName.'/create'),
+                                    ],                                      
+                                ];
+                                if ($menuModel->excel) {
+                                    $menu['action']['import'] = [
+                                        'title'=>$menuTitle.'导入',
+                                        'href'=>U($controllerName.'/import'),
+                                    ];
+                                }
+                            }
+                    </php>                    
+                    <if condition="(($authorControllerInfo === true) && (!in_array($controllerName, $authorControllerInfoBlack))) || (($authorControllerInfo === false) && (in_array($controllerName, $authorControllerInfoWhite)))">
+                    <li <if condition="CONTROLLER_NAME eq $controllerName">class="active"</if>> 
+                        <a href="#" class="dropdown-toggle">
+                            <i class="{$menuIcon}"></i>
+                            <span class="menu-text">
+                                {$menuTitle}管理
+                            </span>
+                            <b class="arrow icon-angle-down"></b>
+                        </a> 
+                        <ul class="submenu">
+                            <foreach name="menu['action']" item="actionParams" key="actionName">
+                            <li <if condition="(ACTION_NAME eq $actionName) AND (CONTROLLER_NAME eq $controllerName)">class="active"</if>> 
+                                <a href="{$actionParams['href']}">
+                                    <i class="icon-double-angle-right"></i>{$actionParams['title']}
+                                </a> 
+                            </li>                             
+                            </foreach>
+                        </ul>
+                    </li>
+                    </if>
+                    <php>
+                    }//最外层foreach   
+                    </php>
+                    <!--HeaderEnd-->
+                </ul>
+            <!-- /.nav-list -->
+            <div class="sidebar-collapse" id="sidebar-collapse">
+                <i class="icon-double-angle-left" data-icon1="icon-double-angle-left" data-icon2="icon-double-angle-right"></i>
+            </div>
+            <script type="text/javascript">try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}</script>
+        </div>
+        <div class="main-content">
+            <div class="breadcrumbs" id="breadcrumbs">
+                <script type="text/javascript">try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}</script>
+
+                <ul class="breadcrumb">
+                    <li>
+                    <i class="{$modelIcon}"></i>
+                    <a href="{:U('list')}">{$modelName}管理</a>
+                    </li>
+                    <li class="active">{$modelName}{$crumbsMap[ACTION_NAME]}</li>
+                </ul>
+                <!-- .breadcrumb --> </div>
+            <div class="page-content">
+                <div class="page-header">
+                    <h1>{$modelName}{$crumbsMap[ACTION_NAME]}</h1>
+                </div>
+                <!-- /.page-header -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- PAGE CONTENT BEGINS -->

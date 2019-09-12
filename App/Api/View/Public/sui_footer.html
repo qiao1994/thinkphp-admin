@@ -1,0 +1,142 @@
+</div>
+</div>
+</div>
+<div class="panel-overlay"></div>
+<div class="panel panel-left panel-reveal theme-dark" id='select-panel-guider'>
+    <div class="content-block">
+        <p>根据条件筛选</p>
+    </div>
+    <form>
+        <div class="list-block">
+            <ul>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <input type="text" name="searchMap[location]" placeholder="服务地区" value="{$_GET['searchMap']['location']}">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <select name="searchMap[age]">
+                                    <option value="">年龄不限</option>
+                                    <option value="0,20" <if condition="$_GET['searchMap']['age'] eq '0,20'">selected</if>>20岁以下</option>
+                                    <option value="20,30" <if condition="$_GET['searchMap']['age'] eq '20,30'">selected</if>>20~30岁</option>
+                                    <option value="30,40" <if condition="$_GET['searchMap']['age'] eq '30,40'">selected</if>>30~40岁</option>
+                                    <option value="40,50" <if condition="$_GET['searchMap']['age'] eq '40,50'">selected</if>>40~50岁</option>
+                                    <option value="50,100" <if condition="$_GET['searchMap']['age'] eq '50,100'">selected</if>>50岁以上</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <select name="searchMap[gender]">
+                                    <option value="">性别不限</option>
+                                    <option value="男" <if condition="$_GET['searchMap']['gender'] eq '男'">selected</if>>男</option>
+                                    <option value="女" <if condition="$_GET['searchMap']['gender'] eq '女'">selected</if>>女</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <select name="searchMap[degree]">
+                                    <option value="">导游学历</option>
+                                    <option value="专科" <if condition="$_GET['searchMap']['degree'] eq '专科'">selected</if>>专科</option>
+                                    <option value="本科" <if condition="$_GET['searchMap']['degree'] eq '本科'">selected</if>>本科</option>
+                                    <option value="硕士" <if condition="$_GET['searchMap']['degree'] eq '硕士'">selected</if>>硕士</option>
+                                    <option value="博士" <if condition="$_GET['searchMap']['degree'] eq '博士'">selected</if>>博士</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <input type="text" name="searchMap[special]" placeholder="导游专长" value="{$_GET['searchMap']['special']}">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <input type="text" name="searchMap[nationality]" placeholder="导游国籍" value="{$_GET['searchMap']['nationality']}">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="content-block">
+            <div class="row">
+                <div class="col-50"><a href="#" class="button button-big button-fill button-danger close-panel">取消</a></div>
+                <div class="col-50">
+                    <input type="submit" class="button button-big button-fill button-success" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="panel panel-left panel-reveal theme-dark" id='select-panel-funding'>
+    <div class="content-block">
+        <p>根据条件筛选</p>
+    </div>
+    <form>
+        <div class="list-block">
+            <ul>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <input type="text" name="searchMap[name]" placeholder="关键字" value="{$_GET['searchMap']['name']}">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="item-content">
+                        <div class="item-inner">
+                            <div class="item-input">
+                                <select name="searchMap[funding_type]">
+                                    <option value="">众筹类型</option>
+                                    <php>
+                                    	$fundingTypeList = D('FundingType')->select();
+                                    </php>
+                                    <volist name="fundingTypeList" id="vo">
+                                    	<option value="{$vo['id']}" <if condition="$_GET['searchMap']['funding_type'] eq $vo['id']">selected</if>>{$vo['long_name']}</option>
+                                    </volist>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="content-block">
+            <div class="row">
+                <div class="col-50"><a href="#" class="button button-big button-fill button-danger close-panel">取消</a></div>
+                <div class="col-50">
+                    <input type="submit" class="button button-big button-fill button-success" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+
+</html>
